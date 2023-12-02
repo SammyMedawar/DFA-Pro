@@ -569,7 +569,7 @@ function refreshImportDropdownCompare() {
         link.innerText = savedState.name;
         
         link.onclick = function () {
-
+            // Select Dfa to be compared and store it in dfaToBeCompared array
             if (dfaToBeCompared.length < 2 && !listItem.classList.contains("Selected")) {
                 let tempDfa = new FiniteAutomata();
                 const importatedState = JSON.parse(savedState.fsm)
@@ -577,13 +577,13 @@ function refreshImportDropdownCompare() {
                 dfaToBeCompared.push(tempDfa)
                 listItem.classList.add("Selected")
             }
-            console.log(dfaToBeCompared)
         }
         // Add the link to the dropdown
         listItem.appendChild(link);
         dropdownContent.appendChild(listItem);
         index++;
     });
+    // Add compare button in the dropdown
     const compareBtn = document.createElement('button')
     compareBtn.innerText = "Compare"
     compareBtn.classList.add("compare-btn")
@@ -605,6 +605,8 @@ function refreshImportDropdownCompare() {
     }
     dropdownContent.appendChild(compareBtn)
     const resetBtn = document.createElement('button')
+
+    // Add reset button in the dropdown
     resetBtn.innerText = "Reset"
     resetBtn.classList.add("reset-btn")
     resetBtn.onclick = function () {
