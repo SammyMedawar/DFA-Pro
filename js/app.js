@@ -421,7 +421,7 @@ cnv.oncontextmenu = function (e) {
                         const { x, y } = contextMenuPos;
                         const name = prompt('State Name: ');
 
-                        if (name === null || !name.trim() || name.length > 4) {
+                        if (name === null || !name.trim() || name.length > 1) {
                             contextMenu();
                             return;
                         }
