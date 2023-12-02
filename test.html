@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hugging Face Inference Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="module">
+        const api_url = "https://api-inference.huggingface.co/models/bert-base-uncased";
+        const pipeline = "table-question-answering/"
+        const payload = JSON.stringify({
+            "query": { "inputs": "The answer to the universe is [MASK]." },
+        });
+
+        // Add your token from https://huggingface.co/settings/token
+        const body = {
+            "headers": { "Authorization": "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" },
+            "wait_for_model": true,
+            "use_gpu": false,
+            "method": "POST",
+            "contentType": "application/json",
+            "payload": payload
+        };
+
+        $(document).ready(function () {
+            $("#btn").click(function () {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("POST", api_url, false);
+                xmlHttp.send(body);
+                console.log(xmlHttp.responseText);
+
+            })
+        })
+
+    </script>
+</head>
+
+<body>
+    <h1>Hugging Face Inference Example</h1>
+    <button id="btn">click me</button>
+</body>
+
+</html>
