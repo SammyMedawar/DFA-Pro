@@ -19,11 +19,13 @@ let fa2 = new FiniteAutomata();
 fa.import(load());
 fa2.import(load());
 render();
+let dfaToBeCompared = []
 
 $("#clear").onclick = function () {
     if (!confirm('Are you sure? everything will be removed')) return;
     localStorage.clear();
     resetCanvas();
+    dfaToBeCompared = [];
 }
 
 $('#test').onclick = function () {
@@ -470,97 +472,21 @@ $("#save").onclick = function () {
 
 
 $("#compare").onclick = function () {
-    /*
-    const savedStates = JSON.parse(localStorage.getItem('savedStates')) || [];
-    const importatedStates = JSON.parse(savedStates[1].fsm)
-    fa2.import(importatedStates)
-    console.log(compareDfas(fa,fa2))
-    */
+    
+    if (!document.getElementById("myDropdown2").classList.contains("show")) {
+        document.getElementById("myDropdown2").classList.toggle("show");
+        refreshImportDropdownCompare();
+        return;
+    }
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+    }
 }
-
-
-// function hopcroftKarp(dfa1, dfa2) {
-//     // Helper function to check if a state pair is distinguishable
-//     function areDistinguishable(pair, partition) {
-//       for (const symbol of dfa1.getSymbols()) {
-//         const next1 = dfa1.getState(pair[0].getTransition(symbol)[0]);
-//         const next2 = dfa2.getState(pair[1].getTransition(symbol)[0]);
-//         const nextPair = [next1, next2];
-
-//         const part1 = partition[pair[0]];
-//         const part2 = partition[pair[1]];
-
-//         if (partition[nextPair[0]] !== partition[nextPair[1]]) {
-//           return true; // States are distinguishable
-//         }
-//       }
-//       return false; // States are indistinguishable
-//     }
-
-//     // Initialize the partition
-//     let partition = {};
-//     let equivalenceClasses = {};
-
-//     // Initialize with two classes: accepting and non-accepting states
-//     partition = {
-//       'accepting': new Set(),
-//       'nonAccepting': new Set(),
-//     };
-
-//     for (const state of dfa1.states) {
-//         state.isTerminal(dfa1)
-
-//       const isAccepting1 = dfa1.accepting.includes(state);
-//       const isAccepting2 = dfa2.accepting.includes(state);
-//       const key = isAccepting1 + '-' + isAccepting2;
-
-//       if (!equivalenceClasses[key]) {
-//         equivalenceClasses[key] = [];
-//       }
-
-//       equivalenceClasses[key].push(state);
-//     }
-
-//     for (const key in equivalenceClasses) {
-//       for (const state of equivalenceClasses[key]) {
-//         partition[state] = key;
-//       }
-//     }
-
-//     // Hopcroft-Karp algorithm
-//     let refined = true;
-//     while (refined) {
-//       refined = false;
-
-//       for (const state of dfa1.states) {
-//         for (const otherState of dfa1.states) {
-//           if (state !== otherState && partition[state] === partition[otherState]) {
-//             const pair = [state, otherState];
-//             if (areDistinguishable(pair, partition)) {
-//               refined = true;
-
-//               // Split the classes
-//               for (const symbol of dfa1.alphabet) {
-//                 const next1 = dfa1.transitions[pair[0]][symbol];
-//                 const next2 = dfa2.transitions[pair[1]][symbol];
-//                 const nextPair = [next1, next2];
-
-//                 if (partition[nextPair[0]] !== partition[nextPair[1]]) {
-//                   partition[state] = partition[nextPair[0]];
-//                   partition[otherState] = partition[nextPair[1]];
-//                   break;
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-
-//     // Check if the initial states are in the same class (equivalent)
-//     return partition[dfa1.initial] === partition[dfa2.initial];
-//   }
-
 
 
 //function to save automata
@@ -626,8 +552,70 @@ function refreshImportDropdown() {
     });
 }
 
+function refreshImportDropdownCompare() {
+    savedStates = JSON.parse(localStorage.getItem('savedStates')) || [];
+    const dropdownContent = document.getElementById("myDropdown2");
 
+    // Clear existing dropdown content
+    dropdownContent.innerHTML = "";
 
+    index = 0;
+    // Add links for each saved state with right-click context menu
+    savedStates.forEach(savedState => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+
+        link.href = "#";
+        link.innerText = savedState.name;
+        
+        link.onclick = function () {
+
+            if (dfaToBeCompared.length < 2 && !listItem.classList.contains("Selected")) {
+                let tempDfa = new FiniteAutomata();
+                const importatedState = JSON.parse(savedState.fsm)
+                tempDfa.import(importatedState)
+                dfaToBeCompared.push(tempDfa)
+                listItem.classList.add("Selected")
+            }
+            console.log(dfaToBeCompared)
+        }
+        // Add the link to the dropdown
+        listItem.appendChild(link);
+        dropdownContent.appendChild(listItem);
+        index++;
+    });
+    const compareBtn = document.createElement('button')
+    compareBtn.innerText = "Compare"
+    compareBtn.classList.add("compare-btn")
+    compareBtn.onclick = function () {
+        selectedContent = document.getElementsByClassName("Selected")
+        if (selectedContent.length != 2) {
+            alert("Select 2 Dfas to compare")
+        }
+        else {
+            let dfa1 = selectedContent[0].innerText
+            let dfa2 = selectedContent[1].innerText
+            if (compareDfas(dfaToBeCompared[0],dfaToBeCompared[1])) {
+                alert("The 2 Dfas " + dfa1 + " and " + dfa2 +" are Equivilent")
+            }
+            else {
+                alert("The 2 Dfas " + dfa1 + " and " + dfa2 +" aren't Equivilent")
+            }
+        }
+    }
+    dropdownContent.appendChild(compareBtn)
+    const resetBtn = document.createElement('button')
+    resetBtn.innerText = "Reset"
+    resetBtn.classList.add("reset-btn")
+    resetBtn.onclick = function () {
+        dfaToBeCompared = []
+        selectedContent = document.getElementsByClassName("Selected")
+        while (selectedContent.length != 0) {
+            selectedContent[0].classList.remove('Selected')
+        }
+    }
+    dropdownContent.appendChild(resetBtn)
+}
 
 function findNearestListItem(x, y) {
     const listItemElements = document.querySelectorAll('#myDropdown li');

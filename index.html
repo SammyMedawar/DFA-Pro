@@ -29,7 +29,13 @@
         <button id="export-image">Export Image</button>
         <button id="test">Test String Acceptance</button>
         <button id="minimizedfa">Minimize dfa</button>
-        <button id="compare">Compare</button>
+        <div class="dropdown hidden">
+            <button class="dropbtn" id="compare">Compare</button>
+            <div id="myDropdown2" class="dropdown-content">
+              <a href="#">By Prompt</a>
+              <a href="#">By Transition Table</a>
+            </div>
+        </div>
         <button id="convert2dfa" class="hidden">convert to dfa</button>
         <button id="convert2re" class="hidden">convert to re</button>
         <button id="complement" class="hidden">complement</button>

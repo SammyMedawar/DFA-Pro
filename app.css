@@ -210,3 +210,19 @@ ul {
 li{
     list-style: none !important;
 }
+
+#compare {
+    width: 100%;
+}
+.Selected {
+    background-color: magenta;
+}
+.dropdown-content .selected a:hover {
+    background-color: magenta
+}
+.reset-btn {
+    width: 50%
+}
+.compare-btn {
+    width: 50%
+}
